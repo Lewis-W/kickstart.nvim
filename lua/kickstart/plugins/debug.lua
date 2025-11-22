@@ -34,21 +34,21 @@ return {
       desc = 'Debug: Start/Continue',
     },
     {
-      '<F1>',
+      '<F11>',
       function()
         require('dap').step_into()
       end,
       desc = 'Debug: Step Into',
     },
     {
-      '<F2>',
+      '<F10>',
       function()
         require('dap').step_over()
       end,
       desc = 'Debug: Step Over',
     },
     {
-      '<F3>',
+      '<F9>',
       function()
         require('dap').step_out()
       end,
@@ -106,6 +106,7 @@ return {
       --    Don't feel like these are good choices.
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
       controls = {
+        enabled = true,
         icons = {
           pause = '⏸',
           play = '▶',
@@ -121,20 +122,69 @@ return {
     }
 
     -- Change breakpoint icons
-    -- vim.api.nvim_set_hl(0, 'DapBreak', { fg = '#e51400' })
-    -- vim.api.nvim_set_hl(0, 'DapStop', { fg = '#ffcc00' })
-    -- local breakpoint_icons = vim.g.have_nerd_font
-    --     and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
-    --   or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
-    -- for type, icon in pairs(breakpoint_icons) do
-    --   local tp = 'Dap' .. type
-    --   local hl = (type == 'Stopped') and 'DapStop' or 'DapBreak'
-    --   vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
-    -- end
+    vim.api.nvim_set_hl(0, 'DapBreak', { fg = '#e51400' })
+    vim.api.nvim_set_hl(0, 'DapStop', { fg = '#ffcc00' })
+    local breakpoint_icons = vim.g.have_nerd_font
+        and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
+      or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
+    for type, icon in pairs(breakpoint_icons) do
+      local tp = 'Dap' .. type
+      local hl = (type == 'Stopped') and 'DapStop' or 'DapBreak'
+      vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
+    end
 
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
+
+    local vstuc_path = vim.env.HOME .. '/.vscode/extensions/visualstudiotoolsforunity.vstuc-1.1.3/bin/'
+    -- dap.adapters.vstuc = {
+    --   type = 'executable',
+    --   command = 'dotnet',
+    --   args = { vstuc_path .. 'UnityDebugAdapter.dll' },
+    -- }
+
+    -- dap.configurations.cs = {
+    --   {
+    --     type = 'vstuc',
+    --     request = 'attach',
+    --     name = 'Attach to Unity cs',
+    --     logFile = vim.fs.joinpath(vim.fn.stdpath 'data') .. '/vstuc.log',
+    --     projectPath = function()
+    --       local path = vim.fn.expand '%:p'
+    --       while true do
+    --         local new_path = vim.fn.fnamemodify(path, ':h')
+    --         if new_path == path then
+    --           return ''
+    --         end
+    --         path = new_path
+    --         local assets = vim.fn.glob(path .. '/Assets')
+    --         if assets ~= '' then
+    --           return path
+    --         end
+    --       end
+    --     end,
+    --     endPoint = function()
+    --       local system_obj = vim.system({ 'dotnet', vstuc_path .. 'UnityAttachProbe.dll' }, { text = true })
+    --       local probe_result = system_obj:wait(2000).stdout
+    --       if probe_result == nil or #probe_result == 0 then
+    --         print 'No endpoint found (is unity running?)'
+    --         return ''
+    --       end
+    --       for json in vim.gsplit(probe_result, '\n') do
+    --         if json ~= '' then
+    --           local probe = vim.json.decode(json)
+    --           for _, p in pairs(probe) do
+    --             if p.isBackground == false then
+    --               return p.address .. ';' .. p.debuggerPort
+    --             end
+    --           end
+    --         end
+    --       end
+    --       return ''
+    --     end,
+    --   },
+    -- }
 
     -- Install golang specific config
     require('dap-go').setup {

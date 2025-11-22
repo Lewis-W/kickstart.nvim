@@ -573,6 +573,7 @@ require('lazy').setup({
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
+
           map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
@@ -908,6 +909,7 @@ require('lazy').setup({
     config = function()
       ---@diagnostic disable-next-line: missing-fields
       require('tokyonight').setup {
+
         styles = {
           comments = { italic = false }, -- Disable italics in comments
         },
@@ -1009,6 +1011,38 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+
+  {
+    'nicholasmata/nvim-dap-cs',
+    dependencies = { 'mfussenegger/nvim-dap' },
+    cmd = 'CSDapStart',
+    config = function()
+      require('dap-cs').setup()
+    end,
+  },
+  {
+    'gelguy/wilder.nvim',
+    config = function()
+      local wilder = require 'wilder'
+      wilder.setup { modes = { ':', '/', '?' } }
+
+      wilder.set_option('pipeline', {
+        wilder.branch(wilder.cmdline_pipeline(), wilder.search_pipeline()),
+      })
+
+      wilder.set_option(
+        'renderer',
+        wilder.popupmenu_renderer {
+          highlighter = wilder.basic_highlighter(),
+        }
+      )
+    end,
+  },
+  {
+    'erifirin/unity-dap.nvim',
+    opts = {},
+    cmd = 'UnityDapStart',
+  },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
