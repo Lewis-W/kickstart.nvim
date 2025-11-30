@@ -180,6 +180,12 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Ctrl+S to save
+-- vim.keymap.set({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr>', { desc = 'Save file' })
+
+-- Set working directory to current buffer's file location
+vim.keymap.set('n', '<leader>z', vim.cmd 'cd %:p:h')
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -606,6 +612,15 @@ require('lazy').setup({
             end
           end
 
+          -- vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+          --   buffer = event.buf,
+          --   callback = function()
+          --     vim.lsp.buf.hover {
+          --       focus = false,
+          --     }
+          --   end,
+          -- })
+          --
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
@@ -693,6 +708,8 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         roslyn = {},
+        remark_ls = {},
+        -- omnisharp = {},
         -- csharp_ls = {},
         -- csharpier = {},
         -- clangd = {},
@@ -899,46 +916,31 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
-  {
-    'sainnhe/gruvbox-material',
-    lazy = false,
-    priority = 1000,
-    config = function()
-      -- Optionally configure and load the colorscheme
-      -- directly inside the plugin declaration.
-      -- vim.g.gruvbox_material_enable_italic = true
-      -- material, mix, original
-      vim.g.gruvbox_material_foreground = 'material'
-      -- hard, medium, soft
-      vim.g.gruvbox_material_background = 'hard'
-      vim.cmd.colorscheme 'gruvbox-material'
-    end,
-  },
   -- {
   --   'rebelot/kanagawa.nvim',
   -- },
-  -- { -- You can easily change to a different colorscheme.
-  --   -- Change the name of the colorscheme plugin below, and then
-  --   -- change the command in the config to whatever the name of that colorscheme is.
-  --   --
-  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  --   'folke/tokyonight.nvim',
-  --   priority = 1000, -- Make sure to load this before all the other start plugins.
-  --   config = function()
-  --     ---@diagnostic disable-next-line: missing-fields
-  --     require('tokyonight').setup {
-  --
-  --       styles = {
-  --         comments = { italic = false }, -- Disable italics in comments
-  --       },
-  --     }
-  --
-  --     -- Load the colorscheme here.
-  --     -- Like many other themes, this one has different styles, and you could load
-  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  --     vim.cmd.colorscheme 'tokyonight-night'
-  --   end,
-  -- },
+  { -- You can easily change to a different colorscheme.
+    -- Change the name of the colorscheme plugin below, and then
+    -- change the command in the config to whatever the name of that colorscheme is.
+    --
+    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+    'folke/tokyonight.nvim',
+    priority = 1000, -- Make sure to load this before all the other start plugins.
+    config = function()
+      ---@diagnostic disable-next-line: missing-fields
+      require('tokyonight').setup {
+
+        styles = {
+          comments = { italic = false }, -- Disable italics in comments
+        },
+      }
+
+      -- Load the colorscheme here.
+      -- Like many other themes, this one has different styles, and you could load
+      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+      vim.cmd.colorscheme 'tokyonight-night'
+    end,
+  },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -980,12 +982,100 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+  -- {
+  --   'lewis6991/hover.nvim',
+  --   config = function()
+  --     require('hover').config {
+  --       --- List of modules names to load as providers.
+  --       --- @type (string|Hover.Config.Provider)[]
+  --       providers = {
+  --         -- 'hover.providers.diagnostic',
+  --         'hover.providers.lsp',
+  --         'hover.providers.dap',
+  --         'hover.providers.man',
+  --         -- 'hover.providers.dictionary',
+  --         -- Optional, disabled by default:
+  --         -- 'hover.providers.gh',
+  --         -- 'hover.providers.gh_user',
+  --         -- 'hover.providers.jira',
+  --         -- 'hover.providers.fold_preview',
+  --         -- 'hover.providers.highlight',
+  --       },
+  --       preview_opts = {
+  --         border = 'single',
+  --       },
+  --       -- Whether the contents of a currently open hover window should be moved
+  --       -- to a :h preview-window when pressing the hover keymap.
+  --       preview_window = false,
+  --       title = true,
+  --       mouse_providers = {
+  --         -- 'hover.providers.lsp',
+  --       },
+  --       mouse_delay = 250,
+  --     }
+  --
+  --     -- Setup keymaps
+  --     vim.keymap.set('n', 'K', function()
+  --       require('hover').open()
+  --     end, { desc = 'hover.nvim (open)' })
+  --
+  --     vim.keymap.set('n', 'gK', function()
+  --       require('hover').enter()
+  --     end, { desc = 'hover.nvim (enter)' })
+  --
+  --     vim.keymap.set('n', '<C-p>', function()
+  --       require('hover').switch 'previous'
+  --     end, { desc = 'hover.nvim (previous source)' })
+  --
+  --     vim.keymap.set('n', '<C-n>', function()
+  --       require('hover').switch 'next'
+  --     end, { desc = 'hover.nvim (next source)' })
+  --
+  --     -- Mouse support
+  --     vim.keymap.set('n', '<MouseMove>', function()
+  --       require('hover').mouse()
+  --     end, { desc = 'hover.nvim (mouse)' })
+  --
+  --     vim.o.mousemoveevent = true
+  --
+  --     vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+  --       callback = function()
+  --         require('hover').open()
+  --       end,
+  --     })
+  --   end,
+  -- },
   {
     'seblyng/roslyn.nvim',
     ---@module 'roslyn.config'
     ---@type RoslynNvimConfig
     opts = {
       -- your configuration comes here; leave empty for default settings
+      vim.lsp.config('roslyn', {
+        settings = {
+          ['csharp|inlay_hints'] = {
+            csharp_enable_inlay_hints_for_implicit_object_creation = true,
+            csharp_enable_inlay_hints_for_implicit_variable_types = true,
+            csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+            csharp_enable_inlay_hints_for_types = true,
+            dotnet_enable_inlay_hints_for_indexer_parameters = true,
+            dotnet_enable_inlay_hints_for_literal_parameters = true,
+            dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+            dotnet_enable_inlay_hints_for_other_parameters = true,
+            dotnet_enable_inlay_hints_for_parameters = true,
+          },
+          ['csharp|code_lens'] = {
+            dotnet_enable_references_code_lens = true,
+          },
+          ['csharp|symbol_search'] = {
+            dotnet_search_reference_assemblies = true,
+          },
+          ['csharp|background_analysis'] = {
+            dotnet_analyzer_diagnostics_scope = 'fullSolution',
+            dotnet_compiler_diagnostics_scope = 'fullSolution',
+          },
+        },
+      }),
     },
   },
   { -- Highlight, edit, and navigate code
@@ -994,7 +1084,28 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'c_sharp',
+        'javascript',
+        'toml',
+        'tsx',
+        'typescript',
+        'ron',
+        'json',
+        'markdown',
+        'markdown_inline',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1061,13 +1172,13 @@ require('lazy').setup({
     opts = {},
     cmd = 'UnityDapStart',
   },
-  {
-    'apyra/nvim-unity-sync',
-    lazy = false,
-    config = function()
-      require('unity.plugin').setup()
-    end,
-  },
+  -- {
+  --   'apyra/nvim-unity-sync',
+  --   lazy = false,
+  --   config = function()
+  --     require('unity.plugin').setup()
+  --   end,
+  -- },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
