@@ -659,6 +659,9 @@ require('lazy').setup({
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
           end
+
+          -- Enable inlay hints by default
+          vim.lsp.inlay_hint.enable(true)
         end,
       })
 
@@ -707,7 +710,8 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        roslyn = {},
+        -- roslyn = {},
+        -- roslyn_unstable = {},
         remark_ls = {},
         -- omnisharp = {},
         -- csharp_ls = {},
@@ -919,28 +923,59 @@ require('lazy').setup({
   -- {
   --   'rebelot/kanagawa.nvim',
   -- },
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+  {
+    'Mofiqul/vscode.nvim',
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
+      require('vscode').setup {
+        color_overrides = {},
       }
 
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'vscode'
+
+      -- Colour C# interfaces light green
+      vim.api.nvim_set_hl(0, '@lsp.type.interface.cs', { fg = '#b8d7a3' })
+
+      -- Colour C# fields/properties white
+      vim.api.nvim_set_hl(0, '@lsp.type.field.cs', { fg = '#d4d4d4' })
+      vim.api.nvim_set_hl(0, '@lsp.type.property.cs', { fg = '#d4d4d4' })
+
+      -- Colour C# namespaces white
+      vim.api.nvim_set_hl(0, '@lsp.type.namespace.cs', { fg = '#d4d4d4' })
     end,
   },
+  -- { -- You can easily change to a different colorscheme.
+  --   -- Change the name of the colorscheme plugin below, and then
+  --   -- change the command in the config to whatever the name of that colorscheme is.
+  --   --
+  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  --   'folke/tokyonight.nvim',
+  --   priority = 1000, -- Make sure to load this before all the other start plugins.
+  --   config = function()
+  --     ---@diagnostic disable-next-line: missing-fields
+  --     require('tokyonight').setup {
+  --
+  --       styles = {
+  --         comments = { italic = false }, -- Disable italics in comments
+  --       },
+  --     }
+  --
+  --     -- Load the colorscheme here.
+  --     -- Like many other themes, this one has different styles, and you could load
+  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  --     vim.cmd.colorscheme 'tokyonight-night'
+  --   end,
+  -- },
+
+  -- {
+  --   'AlexvZyl/nordic.nvim',
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require('nordic').load {
+  --       swap_backgrounds = true,
+  --     }
+  --   end,
+  -- },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -1054,15 +1089,15 @@ require('lazy').setup({
       vim.lsp.config('roslyn', {
         settings = {
           ['csharp|inlay_hints'] = {
-            csharp_enable_inlay_hints_for_implicit_object_creation = true,
+            csharp_enable_inlay_hints_for_implicit_object_creation = false,
             csharp_enable_inlay_hints_for_implicit_variable_types = true,
-            csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+            csharp_enable_inlay_hints_for_lambda_parameter_types = false,
             csharp_enable_inlay_hints_for_types = true,
-            dotnet_enable_inlay_hints_for_indexer_parameters = true,
-            dotnet_enable_inlay_hints_for_literal_parameters = true,
-            dotnet_enable_inlay_hints_for_object_creation_parameters = true,
-            dotnet_enable_inlay_hints_for_other_parameters = true,
-            dotnet_enable_inlay_hints_for_parameters = true,
+            dotnet_enable_inlay_hints_for_indexer_parameters = false,
+            dotnet_enable_inlay_hints_for_literal_parameters = false,
+            dotnet_enable_inlay_hints_for_object_creation_parameters = false,
+            dotnet_enable_inlay_hints_for_other_parameters = false,
+            dotnet_enable_inlay_hints_for_parameters = false,
           },
           ['csharp|code_lens'] = {
             dotnet_enable_references_code_lens = true,
@@ -1081,6 +1116,7 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
+    priority = 1001,
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
@@ -1137,9 +1173,13 @@ require('lazy').setup({
   require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+
+  -- {
+  --   'OmniSharp/omnisharp-vim',
+  -- },
 
   {
     'nicholasmata/nvim-dap-cs',
@@ -1172,6 +1212,7 @@ require('lazy').setup({
     opts = {},
     cmd = 'UnityDapStart',
   },
+
   -- {
   --   'apyra/nvim-unity-sync',
   --   lazy = false,
@@ -1211,6 +1252,15 @@ require('lazy').setup({
     },
   },
 })
+
+-- Neovide config
+if vim.g.neovide then
+  vim.g.neovide_floating_corner_radius = 0.5
+  vim.g.neovide_position_animation_length = 0.085
+  vim.g.neovide_scroll_animation_length = 0.15
+  vim.g.neovide_cursor_animation_length = 0.085
+  -- vim.g.neovide_cursor_vfx_mode = ''
+end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
