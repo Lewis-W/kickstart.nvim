@@ -593,6 +593,7 @@ require('lazy').setup({
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
           map('gW', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
+          map('<C-t>', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Open Workspace Symbols')
 
           -- Jump to the type of the word under your cursor.
           --  Useful when you're not sure what type a variable is and you want to see
@@ -713,6 +714,7 @@ require('lazy').setup({
         -- roslyn = {},
         -- roslyn_unstable = {},
         remark_ls = {},
+        tailwindcss = {},
         -- omnisharp = {},
         -- csharp_ls = {},
         -- csharpier = {},
@@ -1213,6 +1215,18 @@ require('lazy').setup({
     cmd = 'UnityDapStart',
   },
 
+  -- tailwind-tools.lua
+  {
+    'luckasRanarison/tailwind-tools.nvim',
+    name = 'tailwind-tools',
+    build = ':UpdateRemotePlugins',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-telescope/telescope.nvim', -- optional
+      'neovim/nvim-lspconfig', -- optional
+    },
+    opts = {}, -- your configuration
+  },
   -- {
   --   'apyra/nvim-unity-sync',
   --   lazy = false,
