@@ -613,15 +613,6 @@ require('lazy').setup({
             end
           end
 
-          -- vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-          --   buffer = event.buf,
-          --   callback = function()
-          --     vim.lsp.buf.hover {
-          --       focus = false,
-          --     }
-          --   end,
-          -- })
-          --
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
@@ -711,8 +702,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- roslyn = {},
-        -- roslyn_unstable = {},
+        roslyn = {},
         remark_ls = {},
         tailwindcss = {},
         -- omnisharp = {},
@@ -922,9 +912,7 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
-  -- {
-  --   'rebelot/kanagawa.nvim',
-  -- },
+
   {
     'Mofiqul/vscode.nvim',
     config = function()
@@ -945,39 +933,6 @@ require('lazy').setup({
       vim.api.nvim_set_hl(0, '@lsp.type.namespace.cs', { fg = '#d4d4d4' })
     end,
   },
-  -- { -- You can easily change to a different colorscheme.
-  --   -- Change the name of the colorscheme plugin below, and then
-  --   -- change the command in the config to whatever the name of that colorscheme is.
-  --   --
-  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  --   'folke/tokyonight.nvim',
-  --   priority = 1000, -- Make sure to load this before all the other start plugins.
-  --   config = function()
-  --     ---@diagnostic disable-next-line: missing-fields
-  --     require('tokyonight').setup {
-  --
-  --       styles = {
-  --         comments = { italic = false }, -- Disable italics in comments
-  --       },
-  --     }
-  --
-  --     -- Load the colorscheme here.
-  --     -- Like many other themes, this one has different styles, and you could load
-  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  --     vim.cmd.colorscheme 'tokyonight-night'
-  --   end,
-  -- },
-
-  -- {
-  --   'AlexvZyl/nordic.nvim',
-  --   lazy = false,
-  --   priority = 1000,
-  --   config = function()
-  --     require('nordic').load {
-  --       swap_backgrounds = true,
-  --     }
-  --   end,
-  -- },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -1046,7 +1001,7 @@ require('lazy').setup({
   --       preview_window = false,
   --       title = true,
   --       mouse_providers = {
-  --         -- 'hover.providers.lsp',
+  --         'hover.providers.lsp',
   --       },
   --       mouse_delay = 250,
   --     }
@@ -1220,6 +1175,7 @@ require('lazy').setup({
     'luckasRanarison/tailwind-tools.nvim',
     name = 'tailwind-tools',
     build = ':UpdateRemotePlugins',
+    cmd = 'TailwindInit',
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
       'nvim-telescope/telescope.nvim', -- optional
@@ -1227,13 +1183,21 @@ require('lazy').setup({
     },
     opts = {}, -- your configuration
   },
-  -- {
-  --   'apyra/nvim-unity-sync',
-  --   lazy = false,
-  --   config = function()
-  --     require('unity.plugin').setup()
-  --   end,
-  -- },
+  {
+    'apyra/nvim-unity-sync',
+    lazy = false,
+    config = function()
+      require('unity.plugin').setup()
+    end,
+  },
+  {
+    {
+      'igorlfs/nvim-dap-view',
+      ---@module 'dap-view'
+      ---@type dapview.Config
+      opts = {},
+    },
+  },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.

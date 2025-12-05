@@ -20,6 +20,12 @@ return {
           ['\\'] = 'close_window',
         },
       },
+      filtered_items = {
+        visible = false,
+        hide_by_name = {
+          '.meta',
+        },
+      },
     },
   },
 }
