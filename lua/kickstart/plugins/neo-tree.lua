@@ -22,8 +22,9 @@ return {
       },
       filtered_items = {
         visible = false,
-        hide_by_name = {
-          '.meta',
+        hide_by_name = {},
+        hide_by_pattern = {
+          '*.meta',
         },
       },
     },

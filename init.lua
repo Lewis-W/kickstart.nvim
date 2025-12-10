@@ -708,7 +708,42 @@ require('lazy').setup({
         -- omnisharp = {},
         -- csharp_ls = {},
         -- csharpier = {},
-        -- clangd = {},
+        clangd = {
+          keys = {
+            { '<leader>ch', '<cmd>LspClangdSwitchSourceHeader<cr>', desc = 'Switch Source/Header (C/C++)' },
+          },
+          root_markers = {
+            'compile_commands.json',
+            'compile_flags.txt',
+            'configure.ac', -- AutoTools
+            'Makefile',
+            'configure.ac',
+            'configure.in',
+            'config.h.in',
+            'meson.build',
+            'meson_options.txt',
+            'build.ninja',
+            '.git',
+          },
+          capabilities = {
+            offsetEncoding = { 'utf-16' },
+          },
+          cmd = {
+            'clangd',
+            '--background-index',
+            '--clang-tidy',
+            '--header-insertion=iwyu',
+            '--completion-style=detailed',
+            '--function-arg-placeholders',
+            '--fallback-style=webkit',
+          },
+          init_options = {
+            usePlaceholders = true,
+            completeUnimported = true,
+            clangdFileStatus = true,
+          },
+        },
+
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -793,7 +828,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = {} -- c = true, cpp = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -922,8 +957,9 @@ require('lazy').setup({
 
       vim.cmd.colorscheme 'vscode'
 
-      -- Colour C# interfaces light green
+      -- Colour C# interfaces and enums light green
       vim.api.nvim_set_hl(0, '@lsp.type.interface.cs', { fg = '#b8d7a3' })
+      vim.api.nvim_set_hl(0, '@lsp.type.enum.cs', { fg = '#b8d7a3' })
 
       -- Colour C# fields/properties white
       vim.api.nvim_set_hl(0, '@lsp.type.field.cs', { fg = '#d4d4d4' })
@@ -931,6 +967,9 @@ require('lazy').setup({
 
       -- Colour C# namespaces white
       vim.api.nvim_set_hl(0, '@lsp.type.namespace.cs', { fg = '#d4d4d4' })
+
+      -- Colour C# enumMembers white
+      vim.api.nvim_set_hl(0, '@lsp.type.enumMember.cs', { fg = '#d4d4d4' })
     end,
   },
 
@@ -1043,6 +1082,8 @@ require('lazy').setup({
     ---@type RoslynNvimConfig
     opts = {
       -- your configuration comes here; leave empty for default settings
+      filewatching = 'roslyn',
+
       vim.lsp.config('roslyn', {
         settings = {
           ['csharp|inlay_hints'] = {
@@ -1132,11 +1173,8 @@ require('lazy').setup({
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
+  -- require 'kickstart.plugins.nvimtree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
-  -- {
-  --   'OmniSharp/omnisharp-vim',
-  -- },
 
   {
     'nicholasmata/nvim-dap-cs',
